@@ -42,6 +42,8 @@
 #include "http_protocol.h"
 #include "ap_config.h"
 
+char message[50] = "apache<br>";
+
 /* The sample content handler */
 static int first_handler(request_rec *r)
 {
@@ -53,13 +55,22 @@ static int first_handler(request_rec *r)
     r->content_type = "text/html";      
 
     if (!r->header_only)
-        ap_rputs("The sample page from mod_first.c\n", r);
+    {
+        strcat(message, "first_handler<br>");
+        ap_rputs(message, r);
+    }
     return OK;
+}
+
+static void first_child_init(apr_pool_t *p, server_rec *s)
+{
+    strcat(message, "first_child_init<br>");
 }
 
 static void first_register_hooks(apr_pool_t *p)
 {
-    ap_hook_handler(first_handler, NULL, NULL, APR_HOOK_MIDDLE);
+    ap_hook_child_init(first_child_init, NULL, NULL, APR_HOOK_MIDDLE);
+    ap_hook_handler(first_handler, NULL, NULL, APR_HOOK_LAST);
 }
 
 /* Dispatch list for API hooks */
