@@ -67,11 +67,19 @@ static void first_child_init(apr_pool_t *p, server_rec *s)
     strcat(message, "first_child_init<br>");
 }
 
+static int first_init(apr_pool_t *p, apr_pool_t *plog, apr_pool_t *ptemp, server_rec *s)
+{
+    strcat(message, "first_init<br>");
+    return OK;
+}
+
 static void first_register_hooks(apr_pool_t *p)
 {
+    ap_hook_post_config(first_init, NULL, NULL, APR_HOOK_MIDDLE);
     ap_hook_child_init(first_child_init, NULL, NULL, APR_HOOK_MIDDLE);
     ap_hook_handler(first_handler, NULL, NULL, APR_HOOK_LAST);
 }
+
 
 /* Dispatch list for API hooks */
 module AP_MODULE_DECLARE_DATA first_module = {
